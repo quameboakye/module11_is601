@@ -42,18 +42,30 @@ module11_is601/
 ├── app/
 │   ├── auth/
 │   ├── models/
-│   │   └── user.py
+│   │   ├── user.py
+│   │   └── calculation.py
 │   ├── operations/
 │   ├── schemas/
 │   │   ├── base.py
-│   │   └── user.py
+│   │   ├── user.py
+│   │   └── calculation.py
 │   ├── config.py
 │   ├── database.py
 │   └── database_init.py
 ├── tests/
-│   ├── e2e/
+│   ├── unit/
+│   │   ├── test_calculation.py
+│   │   └── test_calculator.py
 │   ├── integration/
-│   └── unit/
+│   │   ├── test_calculation.py
+│   │   ├── test_calculation_schema.py
+│   │   ├── test_database.py
+│   │   ├── test_dependencies.py
+│   │   ├── test_fastapi_calculator.py
+│   │   ├── test_user.py
+│   │   └── test_user_auth.py
+│   └── e2e/
+│       └── test_e2e.py
 ├── Dockerfile
 ├── docker-compose.yml
 ├── requirements.txt
@@ -62,7 +74,6 @@ module11_is601/
 ├── REFLECTION.md
 └── README.md
 ```
-
 ## Prerequisites
 
 Install the following:
@@ -118,8 +129,9 @@ pytest --cov=app --cov-report=term-missing --cov-fail-under=90
 
 The latest verified local test result was:
 
-- **76 tests passed**
-- **97.24% total code coverage**
+- **121 tests passed**
+- **96% total code coverage**
+- **100% coverage for the Calculation model**
 - Coverage requirement: 90%
 
 The suite includes unit, integration, and end-to-end tests.
@@ -275,8 +287,8 @@ The current development Docker Compose credentials and application signing-key c
 - [x] Unit, integration, and end-to-end tests.
 - [x] Local PostgreSQL and Docker Compose verification.
 - [x] Local test coverage above 90%.
-- [ ] Confirm successful GitHub Actions Docker Hub deployment.
-- [ ] Confirm published Docker Hub image can be pulled and run.
+- [x] Confirm successful GitHub Actions Docker Hub deployment (test, security, and deploy jobs green).
+- [x] Confirm published Docker Hub image can be pulled and run (container healthy; /health and /docs return HTTP 200).
 - [ ] Include screenshots of successful GitHub Actions and Docker Hub publication.
 - [x] Project reflection document.
 
