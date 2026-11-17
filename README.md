@@ -1,4 +1,4 @@
-# Module 10: Secure User Model, Pydantic Validation, Database Testing and Docker Deployment
+# Module 11: Secure User Model, Pydantic Validation, Database Testing and Docker Deployment
 
 ## Project Overview
 
@@ -16,8 +16,8 @@ The application includes:
 
 ## Repository Links
 
-- **GitHub:** https://github.com/quameboakye/assignment10_is601
-- **Docker Hub:** https://hub.docker.com/r/slasha1982/assignment10_is601
+- **GitHub:** https://github.com/quameboakye/module11_is601
+- **Docker Hub:** https://hub.docker.com/r/slasha1982/module11_is601
 
 ## Technology Stack
 
@@ -35,7 +35,7 @@ The application includes:
 ## Project Structure
 
 ```text
-assignment10_is601/
+module11_is601/
 ├── .github/
 │   └── workflows/
 │       └── test.yml
@@ -82,8 +82,8 @@ docker compose version
 ## Clone the Repository
 
 ```bash
-git clone https://github.com/quameboakye/assignment10_is601.git
-cd assignment10_is601
+git clone https://github.com/quameboakye/module11_is601.git
+cd module11_is601
 ```
 
 ## Local Python Setup
@@ -119,7 +119,7 @@ pytest --cov=app --cov-report=term-missing --cov-fail-under=90
 The latest verified local test result was:
 
 - **76 tests passed**
-- **97.27% total code coverage**
+- **97.24% total code coverage**
 - Coverage requirement: 90%
 
 The suite includes unit, integration, and end-to-end tests.
@@ -211,7 +211,7 @@ The project uses Pydantic validation for:
 - Password length and complexity.
 - User response serialization.
 
-The `UserRead` response schema is available as a backward-compatible alias of `UserResponse`. The response schema excludes both `password` and `password_hash`.
+The `UserRead` response schema excludes both `password` and `password_hash`.
 
 ## Docker Image
 
@@ -226,17 +226,16 @@ It includes:
 If the image has been published to Docker Hub, it can be pulled and run using:
 
 ```bash
-docker pull slasha1982/assignment10_is601:latest
+docker pull slasha1982/module11_is601:latest
 
 docker run --rm -p 8000:8000 \
-  slasha1982/assignment10_is601:latest
+  slasha1982/module11_is601:latest
 ```
 
 Then visit:
 
 http://localhost:8000/health
 
-Docker Hub image publication should be verified against the actual repository and GitHub Actions run before treating deployment as complete.
 
 ## CI/CD Pipeline
 
