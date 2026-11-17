@@ -123,7 +123,7 @@ jobs:
         with:
           push: true
           tags: |
-            slasha1982/assignment10_is601:latest
-            slasha1982/assignment10_is601:${{ github.sha }}
-          cache-from: type=registry,ref=slasha1982/assignment10_is601:cache
+            slasha1982/module11_is601:latest
+            slasha1982/module11_is601:${{ github.sha }}
+          cache-from: type=registry,ref=slasha1982/module11_is601:cache
           cache-to: type=inline,mode=max
