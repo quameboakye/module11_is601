@@ -32,7 +32,7 @@ class UserCreate(UserBase):
     )
 
 
-class UserResponse(BaseModel):
+class UserRead(BaseModel):
     """Schema for user response data"""
     id: UUID
     username: str
@@ -47,15 +47,13 @@ class UserResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)  # Enable mapping from ORM objects
 
 
-# Assignment-compatible name; preserves existing UserResponse imports.
-UserRead = UserResponse
 
 
 class Token(BaseModel):
     """Schema for authentication token response"""
     access_token: str
     token_type: str = "bearer"
-    user: UserResponse
+    user: UserRead
 
     model_config = ConfigDict(
         json_schema_extra={
