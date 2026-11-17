@@ -60,10 +60,7 @@ def test_user(db_session):
         "is_active": True,
         "is_verified": True
     }
-    if hasattr(User, "hashed_password"):
-        user_kwargs["hashed_password"] = hashed_pw
-    else:
-        user_kwargs["password"] = hashed_pw
+    user_kwargs["password_hash"] = hashed_pw
 
     user = User(**user_kwargs)
     db_session.add(user)
@@ -88,10 +85,7 @@ def seed_users(db_session):
             "is_active": True,
             "is_verified": True
         }
-        if hasattr(User, "hashed_password"):
-            user_kwargs["hashed_password"] = hashed_pw
-        else:
-            user_kwargs["password"] = hashed_pw
+        user_kwargs["password_hash"] = hashed_pw
 
         user = User(**user_kwargs)
         db_session.add(user)

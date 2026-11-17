@@ -4,7 +4,6 @@ import uuid
 from typing import Optional, Dict, Any
 
 from sqlalchemy import Column, String, DateTime, Boolean
-from sqlalchemy.orm import synonym
 from sqlalchemy.dialects.postgresql import UUID
 from app.database import Base
 from sqlalchemy.exc import IntegrityError
@@ -13,7 +12,7 @@ from jose import JWTError, jwt
 from pydantic import ValidationError
 
 from app.schemas.base import UserCreate
-from app.schemas.user import UserResponse, Token
+from app.schemas.user import UserRead, Token
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -32,7 +31,6 @@ class User(Base):
     email = Column(String(120), unique=True, nullable=False)
     username = Column(String(50), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
-    password = synonym("password_hash")
     is_active = Column(Boolean, default=True, nullable=False)
     is_verified = Column(Boolean, default=False, nullable=False)
     last_login = Column(DateTime, nullable=True)
@@ -124,7 +122,7 @@ class User(Base):
         db.commit()
 
         # Create token response using Pydantic models
-        user_response = UserResponse.model_validate(user)
+        user_response = UserRead.model_validate(user)
         token_response = Token(
             access_token=cls.create_access_token({"sub": str(user.id)}),
             token_type="bearer",

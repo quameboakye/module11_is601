@@ -68,7 +68,7 @@ def test_session_handling(db_session):
         last_name="User",
         email="test1@example.com",
         username="testuser1",
-        password="password123"
+        password_hash="password123"
     )
     db_session.add(user1)
     db_session.commit()
@@ -84,7 +84,7 @@ def test_session_handling(db_session):
             last_name="User",
             email="test1@example.com",  # Duplicate
             username="testuser2",
-            password="password456"
+            password_hash="password456"
         )
         db_session.add(user2)
         db_session.commit()
@@ -102,7 +102,7 @@ def test_session_handling(db_session):
         last_name="User",
         email="test3@example.com",
         username="testuser3",
-        password="password789"
+        password_hash="password789"
     )
     db_session.add(user3)
     db_session.commit()
@@ -130,7 +130,7 @@ def test_create_user_with_faker(db_session):
     user_data = create_fake_user()
     logger.info(f"Creating user with data: {user_data}")
     
-    user = User(**user_data)
+    user = User(**{("password_hash" if k == "password" else k): v for k, v in user_data.items()})
     db_session.add(user)
     db_session.commit()
     db_session.refresh(user)  # Refresh populates fields like user.id
@@ -147,7 +147,7 @@ def test_create_multiple_users(db_session):
     users = []
     for _ in range(3):
         user_data = create_fake_user()
-        user = User(**user_data)
+        user = User(**{("password_hash" if k == "password" else k): v for k, v in user_data.items()})
         users.append(user)
         db_session.add(user)
     
@@ -192,7 +192,7 @@ def test_transaction_rollback(db_session):
     
     try:
         user_data = create_fake_user()
-        user = User(**user_data)
+        user = User(**{("password_hash" if k == "password" else k): v for k, v in user_data.items()})
         db_session.add(user)
         # Force an error to trigger rollback
         db_session.execute(text("SELECT * FROM nonexistent_table"))
@@ -234,7 +234,7 @@ def test_bulk_operations(db_session):
     Use --run-slow to enable this test.
     """
     users_data = [create_fake_user() for _ in range(10)]
-    users = [User(**data) for data in users_data]
+    users = [User(**{("password_hash" if k == "password" else k): v for k, v in data.items()}) for data in users_data]
     db_session.bulk_save_objects(users)
     db_session.commit()
     
@@ -251,13 +251,13 @@ def test_unique_email_constraint(db_session):
     Create two users with the same email and expect an IntegrityError.
     """
     first_user_data = create_fake_user()
-    first_user = User(**first_user_data)
+    first_user = User(**{("password_hash" if k == "password" else k): v for k, v in first_user_data.items()})
     db_session.add(first_user)
     db_session.commit()
     
     second_user_data = create_fake_user()
     second_user_data["email"] = first_user_data["email"]  # Force a duplicate email
-    second_user = User(**second_user_data)
+    second_user = User(**{("password_hash" if k == "password" else k): v for k, v in second_user_data.items()})
     db_session.add(second_user)
     
     with pytest.raises(IntegrityError):
@@ -270,13 +270,13 @@ def test_unique_username_constraint(db_session):
     Create two users with the same username and expect an IntegrityError.
     """
     first_user_data = create_fake_user()
-    first_user = User(**first_user_data)
+    first_user = User(**{("password_hash" if k == "password" else k): v for k, v in first_user_data.items()})
     db_session.add(first_user)
     db_session.commit()
     
     second_user_data = create_fake_user()
     second_user_data["username"] = first_user_data["username"]  # Force a duplicate username
-    second_user = User(**second_user_data)
+    second_user = User(**{("password_hash" if k == "password" else k): v for k, v in second_user_data.items()})
     db_session.add(second_user)
     
     with pytest.raises(IntegrityError):
@@ -300,7 +300,7 @@ def test_user_persistence_after_constraint(db_session):
         "username": "firstuser",
         "password": "password123"
     }
-    initial_user = User(**initial_user_data)
+    initial_user = User(**{("password_hash" if k == "password" else k): v for k, v in initial_user_data.items()})
     db_session.add(initial_user)
     db_session.commit()
     saved_id = initial_user.id
@@ -311,7 +311,7 @@ def test_user_persistence_after_constraint(db_session):
             last_name="User",
             email="first@example.com",  # Duplicate
             username="seconduser",
-            password="password456"
+            password_hash="password456"
         )
         db_session.add(duplicate_user)
         db_session.commit()
