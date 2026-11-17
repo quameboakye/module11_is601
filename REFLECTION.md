@@ -1,80 +1,115 @@
-# Module 10 Project Reflection
+# Module 11 Project Reflection
 
 ## Introduction
 
-This project focused on implementing a secure user model, validating user input with Pydantic, testing database functionality, and preparing a FastAPI application for Docker-based deployment.
+Module 11 focused on developing, testing, containerizing, and deploying a FastAPI application with database integration and automated CI/CD. The project brought together Python, SQLAlchemy, Pydantic, PostgreSQL, Pytest, Docker, GitHub Actions, and Docker Hub.
 
-The work combined application development, database configuration, automated testing, containerization, and CI/CD practices.
+An important part of the assignment was implementing a calculation model that supports different arithmetic operations, validating application data, testing the application, and automating the deployment process.
 
 ## What I Implemented
 
-I worked with SQLAlchemy to implement a user model containing a UUID primary key, username, email, password hash, account status fields, and timestamps.
+The application includes:
 
-I implemented unique constraints for usernames and email addresses to prevent duplicate accounts.
+- A FastAPI application with API endpoints and interactive API documentation.
+- SQLAlchemy models for users and calculations.
+- A polymorphic calculation model supporting addition, subtraction, multiplication, and division.
+- Pydantic schemas for validating incoming data and structuring API responses.
+- PostgreSQL database integration.
+- Unit, integration, and end-to-end tests.
+- Docker configuration for containerizing the application.
+- GitHub Actions workflows for automated testing, security scanning, and Docker Hub deployment.
 
-For password security, the application hashes passwords before storing them and verifies submitted passwords against the stored hashes. The database stores the password in a `password_hash` column rather than a plaintext password column.
+The calculation model uses SQLAlchemy inheritance to represent different calculation types. This helped me understand how related models can share common fields while implementing different operations.
 
-I also worked with Pydantic schemas to validate user information, including email addresses and password requirements. The response schema excludes sensitive password fields.
+## Challenges and Solutions
 
-## Database Challenges and Solutions
+### SQLAlchemy Model and Database Configuration
 
-One important challenge was identifying that the application initially had two separate SQLAlchemy declarative Base objects. This meant that the database metadata used by the application did not consistently register the user table.
+One challenge was ensuring that the application models used the same SQLAlchemy declarative Base as the database configuration. Separate Base objects can cause model metadata and database table creation to become disconnected.
 
-I corrected the model and database initialization imports so they use the same Base object. I then verified that the users table was registered in SQLAlchemy metadata and that PostgreSQL contained the expected columns.
+I corrected the imports so that the models and database initialization used the same Base. I then verified the model metadata and database table creation through the integration tests.
 
-Another challenge was a PostgreSQL port conflict. A different PostgreSQL container was already using host port 5432. Rather than stopping that existing database, I changed the project container's host mapping to port 5433 while retaining port 5432 inside the container.
+### PostgreSQL Port Conflict
 
-I also updated the database schema from `password` to `password_hash` and verified that the migration preserved the existing unique constraints.
+I encountered a port conflict because another PostgreSQL container was already using the default host port 5432.
+
+I resolved this by mapping the PostgreSQL container's internal port 5432 to host port 5433. This allowed the project to use its own database without disrupting the existing container configuration.
+
+### Database Schema and Password Hashing
+
+Another challenge involved ensuring that the database schema used the correct password field. The application stores password hashes rather than plain-text passwords.
+
+I aligned the model and schema with the password_hash field and verified that the database retained the required unique constraints.
+
+### GitHub Actions and Deployment
+
+Configuring the CI/CD workflow required careful attention to the database connection settings, PostgreSQL service configuration, and Docker build process.
+
+I corrected the workflow configuration and verified that all three GitHub Actions jobs completed successfully:
+
+- Test: automated tests completed successfully.
+- Security: the security scanning job completed successfully.
+- Deploy: the Docker image was built and published to Docker Hub.
+
+I also pulled the published image from Docker Hub and ran it in a separate test container. The container became healthy, and both the application health endpoint and interactive API documentation returned HTTP 200 responses.
 
 ## Testing and Quality Assurance
 
-I used Pytest to run the project's unit, integration, and end-to-end tests.
+I used Pytest to test the application's functionality across unit, integration, and end-to-end test categories.
 
-The tests cover database operations, uniqueness constraints, authentication, password hashing, Pydantic validation, and application functionality.
+The latest verified local test results were:
 
-The latest verified local test run produced:
+- **121 tests passed**
+- **96% total code coverage**
+- **100% coverage for the Calculation model**
+- **90% minimum coverage requirement**
 
-- 76 passing tests.
-- 97.27% total code coverage.
-- A configured minimum coverage threshold of 90%.
-
-I also verified that the FastAPI health endpoint returned HTTP 200 and that the application container could connect to PostgreSQL.
-
-The schema verification confirmed that the `users` table was registered correctly and that the database contained `password_hash`, rather than a `password` column.
+These results gave me confidence that the application components were working together correctly. The tests also helped identify configuration and integration issues before deployment.
 
 ## Docker and Deployment
 
-I used Docker Compose to run the FastAPI application, PostgreSQL 16, and pgAdmin.
+Docker provided a consistent environment for packaging and running the application.
 
-I verified that the application container started successfully, the PostgreSQL database was healthy, and the application could connect to the database.
+I used Docker Compose for the development environment and GitHub Actions to automate the CI/CD process. The workflow performs testing, security scanning, and deployment of the Docker image.
 
-The Dockerfile uses a Python slim base image and runs the application as a non-root user. It also includes a health check.
+The published image is available at:
 
-The GitHub Actions workflow is configured to automate the testing and Docker deployment process, including security scanning and Docker Hub publishing. A successful remote publication must be confirmed through the GitHub Actions run and Docker Hub repository before it can be reported as completed.
+https://hub.docker.com/r/slasha1982/module11_is601
+
+I verified the deployment by pulling the latest image from Docker Hub and running it in a separate container. The container reported a healthy status.
+
+I also tested the following endpoints:
+
+- Application health check: HTTP 200
+- Interactive API documentation: HTTP 200
+
+This confirmed that the published image could be retrieved and that the application could start successfully outside the original development environment.
 
 ## Lessons Learned
 
-This project reinforced several important software engineering practices:
+This assignment improved my understanding of several important software development concepts:
 
-1. **Database consistency matters.** SQLAlchemy models and database initialization must use the same metadata registry.
-2. **Password security is essential.** Applications should store password hashes, not raw passwords.
-3. **Validation improves data quality.** Pydantic helps reject invalid input before it reaches application logic.
-4. **Automated tests provide confidence.** A comprehensive test suite helps identify regressions when changing models and database configuration.
-5. **Containerization requires careful configuration.** Port mappings, environment variables, health checks, and database readiness all affect successful deployment.
-6. **CI/CD improves repeatability.** Automated testing and deployment reduce the amount of manual work required to deliver application changes.
+1. **SQLAlchemy:** I gained practical experience with model relationships, inheritance, polymorphism, and database metadata.
+2. **Pydantic:** I improved my understanding of data validation and schema design.
+3. **Testing:** I learned the importance of unit, integration, and end-to-end testing, as well as measuring code coverage.
+4. **Docker:** I gained experience building and running containerized applications.
+5. **CI/CD:** I learned how GitHub Actions can automate testing, security scanning, and deployment.
+6. **Troubleshooting:** I became more confident diagnosing database configuration, port conflicts, and deployment issues.
 
 ## Areas for Further Improvement
 
-There are several improvements I would make before using this application in production:
+Although the application and deployment workflow are working, there are areas I would like to improve:
 
-- Move the JWT signing secret into secure external configuration rather than hardcoding it in the model.
-- Replace development database credentials with secure credentials.
-- Add further authentication and authorization integration tests.
-- Verify the complete GitHub Actions deployment and Docker Hub image pull process.
-- Continue monitoring dependency and container vulnerabilities.
+- Expand test coverage for additional calculation edge cases and error scenarios.
+- Improve application configuration and secrets management.
+- Add more comprehensive authentication and authorization integration tests.
+- Continue monitoring dependencies and container vulnerabilities.
+- Improve deployment monitoring and logging.
 
 ## Conclusion
 
-Overall, this assignment gave me practical experience integrating SQLAlchemy, Pydantic, PostgreSQL, Pytest, Docker, and GitHub Actions.
+Module 11 provided practical experience in developing and deploying a Python application using modern software engineering tools.
 
-The successful local test run, database verification, and Docker Compose checks demonstrate that the core application and database configuration are functioning as expected. The project also highlighted the importance of consistent database metadata, secure password handling, and systematic verification during software development.
+I successfully implemented the application models and schemas, integrated PostgreSQL, achieved 96% test coverage, and configured an automated CI/CD workflow. I also verified that the published Docker Hub image could be pulled and run successfully.
+
+The assignment strengthened my understanding of the complete development process, from application implementation and testing to containerization and automated deployment.
