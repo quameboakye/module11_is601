@@ -1,6 +1,7 @@
 import pytest
 from pydantic import ValidationError
 from app.schemas.base import UserBase, PasswordMixin, UserCreate, UserLogin
+from app.schemas.user import UserRead
 
 
 def test_user_base_valid():
@@ -110,3 +111,10 @@ def test_user_login_invalid_password():
     with pytest.raises(ValidationError):
         UserLogin(**data)
 
+
+
+def test_user_read_excludes_password_fields():
+    """UserRead must not expose raw or hashed passwords."""
+    assert "password" not in UserRead.model_fields
+    assert "password_hash" not in UserRead.model_fields
+    assert {"id", "username", "email"}.issubset(UserRead.model_fields)

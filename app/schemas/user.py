@@ -47,6 +47,10 @@ class UserResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)  # Enable mapping from ORM objects
 
 
+# Assignment-compatible name; preserves existing UserResponse imports.
+UserRead = UserResponse
+
+
 class Token(BaseModel):
     """Schema for authentication token response"""
     access_token: str

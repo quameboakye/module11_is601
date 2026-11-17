@@ -1,264 +1,286 @@
-# 📦 Project Setup
+# Module 10: Secure User Model, Pydantic Validation, Database Testing and Docker Deployment
 
----
+## Project Overview
 
-# 🧩 1. Install Homebrew (Mac Only)
+This project demonstrates a FastAPI application with a SQLAlchemy user model, Pydantic validation, secure password hashing, database integration, automated testing, and Docker deployment.
 
-> Skip this step if you're on Windows.
+The application includes:
+- A SQLAlchemy `User` model with UUID primary keys.
+- Unique username and email constraints.
+- Secure password hashing using Passlib and bcrypt.
+- Password verification during authentication.
+- Pydantic schemas for validating user input and controlling response data.
+- PostgreSQL database support.
+- Automated unit, integration, and end-to-end tests.
+- Docker-based application deployment and GitHub Actions CI/CD.
 
-Homebrew is a package manager for macOS.  
-You’ll use it to easily install Git, Python, Docker, etc.
+## Repository Links
 
-**Install Homebrew:**
+- **GitHub:** https://github.com/quameboakye/assignment10_is601
+- **Docker Hub:** https://hub.docker.com/r/slasha1982/assignment10_is601
 
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+## Technology Stack
+
+- Python 3.11 (Docker image)
+- FastAPI
+- SQLAlchemy
+- Pydantic
+- PostgreSQL 16
+- Passlib / bcrypt
+- Pytest and pytest-cov
+- Docker and Docker Compose
+- GitHub Actions
+- Trivy vulnerability scanning
+
+## Project Structure
+
+```text
+assignment10_is601/
+├── .github/
+│   └── workflows/
+│       └── test.yml
+├── app/
+│   ├── auth/
+│   ├── models/
+│   │   └── user.py
+│   ├── operations/
+│   ├── schemas/
+│   │   ├── base.py
+│   │   └── user.py
+│   ├── config.py
+│   ├── database.py
+│   └── database_init.py
+├── tests/
+│   ├── e2e/
+│   ├── integration/
+│   └── unit/
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── main.py
+├── pytest.ini
+├── REFLECTION.md
+└── README.md
 ```
 
-**Verify Homebrew:**
+## Prerequisites
 
-```bash
-brew --version
-```
+Install the following:
+- Python 3.11 or later
+- Git
+- Docker Engine and Docker Compose
 
-If you see a version number, you're good to go.
-
----
-
-# 🧩 2. Install and Configure Git
-
-## Install Git
-
-- **MacOS (using Homebrew)**
-
-```bash
-brew install git
-```
-
-- **Windows**
-
-Download and install [Git for Windows](https://git-scm.com/download/win).  
-Accept the default options during installation.
-
-**Verify Git:**
-
-```bash
-git --version
-```
-
----
-
-## Configure Git Globals
-
-Set your name and email so Git tracks your commits properly:
-
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "your_email@example.com"
-```
-
-Confirm the settings:
-
-```bash
-git config --list
-```
-
----
-
-## Generate SSH Keys and Connect to GitHub
-
-> Only do this once per machine.
-
-1. Generate a new SSH key:
-
-```bash
-ssh-keygen -t ed25519 -C "your_email@example.com"
-```
-
-(Press Enter at all prompts.)
-
-2. Start the SSH agent:
-
-```bash
-eval "$(ssh-agent -s)"
-```
-
-3. Add the SSH private key to the agent:
-
-```bash
-ssh-add ~/.ssh/id_ed25519
-```
-
-4. Copy your SSH public key:
-
-- **Mac/Linux:**
-
-```bash
-cat ~/.ssh/id_ed25519.pub | pbcopy
-```
-
-- **Windows (Git Bash):**
-
-```bash
-cat ~/.ssh/id_ed25519.pub | clip
-```
-
-5. Add the key to your GitHub account:
-   - Go to [GitHub SSH Settings](https://github.com/settings/keys)
-   - Click **New SSH Key**, paste the key, save.
-
-6. Test the connection:
-
-```bash
-ssh -T git@github.com
-```
-
-You should see a success message.
-
----
-
-# 🧩 3. Clone the Repository
-
-Now you can safely clone the course project:
-
-```bash
-git clone <repository-url>
-cd <repository-directory>
-```
-
----
-
-# 🛠️ 4. Install Python 3.10+
-
-## Install Python
-
-- **MacOS (Homebrew)**
-
-```bash
-brew install python
-```
-
-- **Windows**
-
-Download and install [Python for Windows](https://www.python.org/downloads/).  
-✅ Make sure you **check the box** `Add Python to PATH` during setup.
-
-**Verify Python:**
+Verify the installations:
 
 ```bash
 python3 --version
+git --version
+docker --version
+docker compose version
 ```
-or
+
+## Clone the Repository
+
 ```bash
-python --version
+git clone https://github.com/quameboakye/assignment10_is601.git
+cd assignment10_is601
 ```
 
----
+## Local Python Setup
 
-## Create and Activate a Virtual Environment
-
-(Optional but recommended)
+Create and activate a virtual environment:
 
 ```bash
 python3 -m venv venv
-source venv/bin/activate   # Mac/Linux
-venv\Scripts\activate.bat  # Windows
+source venv/bin/activate
 ```
 
-### Install Required Packages
+Install dependencies:
 
 ```bash
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
----
+## Running the Tests
 
-# 🐳 5. (Optional) Docker Setup
-
-> Skip if Docker isn't used in this module.
-
-## Install Docker
-
-- [Install Docker Desktop for Mac](https://www.docker.com/products/docker-desktop/)
-- [Install Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/)
-
-## Build Docker Image
+Run the complete test suite:
 
 ```bash
-docker build -t <image-name> .
+pytest
 ```
 
-## Run Docker Container
+Run tests with coverage reporting and the assignment's 90% minimum:
 
 ```bash
-docker run -it --rm <image-name>
+pytest --cov=app --cov-report=term-missing --cov-fail-under=90
 ```
 
----
+The latest verified local test result was:
 
-# 🚀 6. Running the Project
+- **76 tests passed**
+- **97.27% total code coverage**
+- Coverage requirement: 90%
 
-- **Without Docker**:
+The suite includes unit, integration, and end-to-end tests.
+
+## Database and Docker Compose Setup
+
+The project uses Docker Compose to run the FastAPI application, PostgreSQL, and pgAdmin.
+
+Start the services:
 
 ```bash
-python main.py
+docker compose up -d --build
 ```
 
-(or update this if the main script is different.)
-
-- **With Docker**:
+Check service status:
 
 ```bash
-docker run -it --rm <image-name>
+docker compose ps
 ```
 
----
+The development service endpoints are:
 
-# 📝 7. Submission Instructions
+| Service | Address |
+|---|---|
+| FastAPI | http://localhost:8000 |
+| FastAPI health check | http://localhost:8000/health |
+| FastAPI interactive documentation | http://localhost:8000/docs |
+| pgAdmin | http://localhost:5050 |
+| PostgreSQL host port | 5433 |
 
-After finishing your work:
+The PostgreSQL container listens internally on port 5432 and is mapped to host port 5433 to avoid conflicts with other local PostgreSQL containers.
+
+Initialize the database tables:
 
 ```bash
-git add .
-git commit -m "Complete Module X"
-git push origin main
+docker compose exec -T web python -m app.database_init
 ```
 
-Then submit the GitHub repository link as instructed.
+Verify the users table:
 
----
+```bash
+docker compose exec -T db \
+  psql -U postgres -d fastapi_db -c "\d users"
+```
 
-# 🔥 Useful Commands Cheat Sheet
+Check the application health endpoint:
 
-| Action                         | Command                                          |
-| ------------------------------- | ------------------------------------------------ |
-| Install Homebrew (Mac)          | `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"` |
-| Install Git                     | `brew install git` or Git for Windows installer |
-| Configure Git Global Username  | `git config --global user.name "Your Name"`      |
-| Configure Git Global Email     | `git config --global user.email "you@example.com"` |
-| Clone Repository                | `git clone <repo-url>`                          |
-| Create Virtual Environment     | `python3 -m venv venv`                           |
-| Activate Virtual Environment   | `source venv/bin/activate` / `venv\Scripts\activate.bat` |
-| Install Python Packages        | `pip install -r requirements.txt`               |
-| Build Docker Image              | `docker build -t <image-name> .`                |
-| Run Docker Container            | `docker run -it --rm <image-name>`               |
-| Push Code to GitHub             | `git add . && git commit -m "message" && git push` |
+```bash
+curl -i http://localhost:8000/health
+```
 
----
+Expected response:
 
-# 📋 Notes
+```json
+{"status":"ok"}
+```
 
-- Install **Homebrew** first on Mac.
-- Install and configure **Git** and **SSH** before cloning.
-- Use **Python 3.10+** and **virtual environments** for Python projects.
-- **Docker** is optional depending on the project.
+Check application logs:
 
----
+```bash
+docker compose logs --tail=50 web
+```
 
-# 📎 Quick Links
+Stop the services:
 
-- [Homebrew](https://brew.sh/)
-- [Git Downloads](https://git-scm.com/downloads)
-- [Python Downloads](https://www.python.org/downloads/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [GitHub SSH Setup Guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh)
+```bash
+docker compose down
+```
+
+This command does not remove named database volumes. To remove database volumes, use `docker compose down -v` only when you intentionally want to delete the stored development database data.
+
+## Secure User Model and Validation
+
+The SQLAlchemy user model includes:
+- UUID primary key.
+- First name and last name.
+- Unique email address.
+- Unique username.
+- `password_hash` column.
+- Account activation and verification fields.
+- Login timestamp.
+- Creation and update timestamps.
+
+Raw passwords are hashed before storage. Password verification uses the stored hash rather than storing plaintext passwords.
+
+The project uses Pydantic validation for:
+- Email address format.
+- Required user information.
+- Password length and complexity.
+- User response serialization.
+
+The `UserRead` response schema is available as a backward-compatible alias of `UserResponse`. The response schema excludes both `password` and `password_hash`.
+
+## Docker Image
+
+The Dockerfile builds the FastAPI application using Python 3.11 slim.
+
+It includes:
+- Dependency installation.
+- A non-root application user.
+- A container health check.
+- Uvicorn as the application server.
+
+If the image has been published to Docker Hub, it can be pulled and run using:
+
+```bash
+docker pull slasha1982/assignment10_is601:latest
+
+docker run --rm -p 8000:8000 \
+  slasha1982/assignment10_is601:latest
+```
+
+Then visit:
+
+http://localhost:8000/health
+
+Docker Hub image publication should be verified against the actual repository and GitHub Actions run before treating deployment as complete.
+
+## CI/CD Pipeline
+
+The GitHub Actions workflow is located at:
+
+`.github/workflows/test.yml`
+
+The workflow is configured to automate testing and the Docker build, security scanning, and Docker Hub publishing process.
+
+Docker Hub authentication uses GitHub repository secrets:
+
+- `DOCKERHUB_USERNAME`
+- `DOCKERHUB_TOKEN`
+
+Do not put Docker Hub credentials or other secrets directly in source code or commit them to GitHub.
+
+## Security Considerations
+
+This project is intended as an educational development and deployment exercise.
+
+Before production use:
+- Replace development database credentials with secure credentials.
+- Store secrets outside source code.
+- Configure a strong, externally managed JWT signing secret.
+- Use HTTPS and appropriate production database access controls.
+- Review container and dependency vulnerabilities regularly.
+
+The current development Docker Compose credentials and application signing-key configuration must not be treated as production-ready.
+
+## Submission Checklist
+
+- [x] SQLAlchemy user model.
+- [x] Unique email and username constraints.
+- [x] Password hashing and verification.
+- [x] Pydantic validation.
+- [x] Response schema excludes password fields.
+- [x] Unit, integration, and end-to-end tests.
+- [x] Local PostgreSQL and Docker Compose verification.
+- [x] Local test coverage above 90%.
+- [ ] Confirm successful GitHub Actions Docker Hub deployment.
+- [ ] Confirm published Docker Hub image can be pulled and run.
+- [ ] Include screenshots of successful GitHub Actions and Docker Hub publication.
+- [x] Project reflection document.
+
+## Author
+
+Repository owner: `quameboakye`
